@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentes do Valorant</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+        }
+        .card {
+            border: none;
+            margin: auto;
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+        }
+        .agent-image {
+            width: 250px;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            margin-left: 30px;
+            flex: 1;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .details {
+            display: none; /* Inicialmente oculto */
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+        }
+        .btn-agent {
+            background-color: white;
+            border: 2px solid;
+            color: black;
+            border-radius: 5px;
+            padding: 10px 15px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .btn-agent:hover {
+            background-color: #f0f0f0;
+            color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Valorant</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#agents">Agentes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#maps">Mapas</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 id="agents">Agentes</h1>
+    <div class="row" id="agents-container"></div>
+
+    <h2 id="maps" class="mt-5">Mapas</h2>
+    <div class="row" id="maps-container"></div>
+</div>
+
+<script>
+    const colors = ['#f44336', '#3f51b5', '#4caf50', '#ff9800', '#9c27b0', '#2196f3'];
+
+    async function fetchAgents() {
+        const response = await fetch('https://valorant-api.com/v1/agents');
+        const data = await response.json();
+        const agents = data.data.filter(agent => agent.isPlayableCharacter);
+        return agents.map((agent, index) => ({
+            displayName: agent.displayName,
+            description: agent.description,
+            fullPortrait: agent.fullPortrait,
+            abilities: agent.abilities.map(ability => ability.description),
+            color: colors[index % colors.length]
+        }));
+    }
+
+    async function fetchMaps() {
+        const response = await fetch('https://valorant-api.com/v1/maps');
+        const data = await response.json();
+        return data.data.map(map => ({
+            displayName: map.displayName,
+            image: map.splash
+        }));
+    }
+
+    function toggleDetails(index) {
+        const details = document.getElementById(`details-${index}`);
+        details.style.display = details.style.display === "block" ? "none" : "block";
+    }
+
+    async function displayData() {
+        const agents = await fetchAgents();
+        const maps = await fetchMaps();
+
+        const agentsContainer = document.getElementById('agents-container');
+        agents.forEach((agent, index) => {
+            agentsContainer.innerHTML += `
+                <div class="col-md-12 mb-4">
+                    <div class="card" style="background-color: ${agent.color};">
+                        <div class="flex-row">
+                            <img src="${agent.fullPortrait}" class="agent-image" alt="${agent.displayName}">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <h5 class="card-title">${agent.displayName}</h5>
+                                    <p class="card-text">${agent.description}</p>
+                                    <button class="btn btn-agent" onclick="toggleDetails(${index})">Detalhes</button>
+                                    <div id="details-${index}" class="details">
+                                        <h6>Habilidades:</h6>
+                                        <div class="d-flex flex-column">
+                                            ${agent.abilities.map(ability => `<span>${ability}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const mapsContainer = document.getElementById('maps-container');
+        maps.forEach(map => {
+            mapsContainer.innerHTML += `
+                <div class="col-md-4 mb-4">
+                    <div class="card" style="max-width: 400px;">
+                        <div class="d-flex">
+                            <img src="${map.image}" class="agent-image" alt="${map.displayName}">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <h5 class="card-title">${map.displayName}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    displayData();
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
