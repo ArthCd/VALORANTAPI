@@ -100,8 +100,7 @@
             }
 
             const data = await response.json();
-            localStorage.setItem('logs', JSON.stringify(data));
-            console.log('Logs gravados com sucesso no Local Storage:', data);
+            console.log('Logs gravados:', data);
         } catch (error) {
             console.error('Erro ao buscar os logs:', error.message);
         }
@@ -128,6 +127,7 @@
         const metodo = 'Ler Mapas';
         const retorno = 'Mapas Mostrados';
         fetchLogs(metodo, retorno);
+
         const response = await fetch('https://valorant-api.com/v1/maps');
         const data = await response.json();
         return data.data.map(map => ({
@@ -140,6 +140,7 @@
         const metodo = 'Mostrar detalhes do personagem';
         const retorno = 'Detalhes mostrados';
         fetchLogs(metodo, retorno);
+
         const details = document.getElementById(`details-${index}`);
         details.style.display = details.style.display === "block" ? "none" : "block";
     }
@@ -161,18 +162,13 @@
     }
 
     async function deleteLog(idLog) {
-        const urlDeleteLog = await fetch(`https://www.piway.com.br/unoesc/api/excluir/log/${idLog}/aluno/${matricula}`);
-        
-        try {
-            const response = await fetch(urlDeleteLog, { method: 'DELETE' });
-            if (!response.ok) {
-                throw new Error('Erro ao excluir log.');
-            }
+        const urlDeleteLog = await fetch (`https://www.piway.com.br/unoesc/api/excluir/log/${idLog}/aluno/${matricula}`);
+
+       
+
             // Atualiza a lista de logs após a exclusão
-            fetchLogsByMatricula();
-        } catch (error) {
-            alert(error.message);
-        }
+             fetchLogsByMatricula();
+       
     }
 
     function displayLogs(logs) {
@@ -239,6 +235,4 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/
