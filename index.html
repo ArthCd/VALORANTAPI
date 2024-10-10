@@ -87,8 +87,6 @@
 </div>
 
 <script>
-
- 
     const matricula = "403443"; // Substitua pela matrícula correta
     const colors = ['#f44336', '#3f51b5', '#4caf50', '#ff9800', '#9c27b0', '#2196f3'];
 
@@ -147,7 +145,7 @@
     }
 
     async function fetchLogsByMatricula() {
-        const urlLogs = `https://www.piway.com.br/unoesc/api/logs/403443`;
+        const urlLogs = `https://www.piway.com.br/unoesc/api/logs/${matricula}`;
         
         try {
             const response = await fetch(urlLogs);
@@ -156,32 +154,24 @@
             }
 
             const data = await response.json();
-            displayLogs(data);
+            displayLogs(data); // Exibe os logs
         } catch (error) {
             alert(error.message);
         }
     }
 
     async function deleteLog(idLog) {
+        const urlDeleteLog = await fetch(`https://www.piway.com.br/unoesc/api/excluir/log/${idLog}/aluno/${matricula}`);
         
-          // erro
-    
-        const urlDeleteLog = "https://www.piway.com.br/unoesc/api/excluir/log/${idLog}/aluno/403443";
-
-//
-
         try {
             const response = await fetch(urlDeleteLog, { method: 'DELETE' });
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Erro ao excluir log.');
+                throw new Error('Erro ao excluir log.');
             }
-
-            const data = await response.json();
-            alert(data.message); // Mostra mensagem de sucesso ou erro
-            fetchLogsByMatricula(); // Atualiza a lista de logs
+            // Atualiza a lista de logs após a exclusão
+            fetchLogsByMatricula();
         } catch (error) {
-            alert(`Erro: ${error.message}`);
+            alert(error.message);
         }
     }
 
